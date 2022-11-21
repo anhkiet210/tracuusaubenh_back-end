@@ -1,10 +1,33 @@
 import PostModel from '../../../models/post.model';
-import cloudinary from 'cloudinary';
+import UserModel from '../../../models/user.model';
+import { upload } from '../../../helper/cloudinary';
 
+const folder = 'ak-tracuusaubenh/img-posts';
 const createPost = async (req, res, next) => {
     try {
-        const { title, content, img } = req.body;
-        const imgLink = await cloudinary.v2.uploader.upload(img, { folder: 'ak-tracuusaubenh/img-posts' });
+        const { title, content } = req.body;
+        const { file } = req.files;
+        if (!title) {
+            return res.status(404).json({
+                success: false,
+                message: 'Hãy nhập tiêu đề bài viết!',
+            });
+        }
+        if (!content) {
+            return res.status(404).json({
+                success: false,
+                message: 'Hãy nhập nội dung bài viết!',
+            });
+        }
+
+        if (!file) {
+            return res.status(404).json({
+                success: false,
+                message: 'Hãy thêm ảnh cho bài viết!',
+            });
+        }
+
+        const imgLink = await upload(file.tempFilePath, folder);
         const infoPost = {
             tieude: title,
             noidung: content,
@@ -14,7 +37,7 @@ const createPost = async (req, res, next) => {
         const post = await PostModel.create(infoPost);
         res.status(200).json({
             success: true,
-            message: 'Thành công.',
+            message: 'Thêm bài viết thành công.',
             data: post,
         });
     } catch (error) {
@@ -29,10 +52,18 @@ const createPost = async (req, res, next) => {
 const getAllPost = async (req, res, next) => {
     try {
         const posts = await PostModel.find();
+        let list;
+        for (let i of posts) {
+            const user = await UserModel.findById(i.NguoiDung, { hoten: 1, anhdaidien: 1 });
+            list.push({
+                post: i,
+                user: user,
+            });
+        }
         res.status(200).json({
             success: true,
             message: 'Thành công.',
-            data: posts,
+            data: list,
         });
     } catch (error) {
         console.log(error);
@@ -80,12 +111,27 @@ const deletePost = async (req, res, next) => {
 const updatePost = async (req, res, next) => {
     try {
         const post = await PostModel.findById(req.params.id);
-        const { title, content, img } = req.body;
-        const imgLink = await cloudinary.v2.uploader.upload(img, { folder: 'ak-tracuusaubenh/img-posts' });
+        if (!post) {
+            return res.status(404).json({
+                success: false,
+                message: 'Bài viết không tồn tại!',
+            });
+        }
+        const { title, content } = req.body;
+        const { file } = req.files;
+
+        let linkImg;
+
+        if (!file) {
+            linkImg = null;
+        } else {
+            linkImg = await upload(file.tempFilePath, folder);
+        }
 
         post.tieude = title || post.tieude;
         post.noidung = content || post.noidung;
         post.anh = imgLink.url || post.anh;
+        post.save();
         res.status(200).json({
             success: true,
             message: 'Cập nhật bài viết thành công.',
@@ -126,7 +172,7 @@ const acceptPost = async (req, res, next) => {
             data: post,
         });
     } catch (error) {
-        res.status(500).json({
+        res.status(501).json({
             success: false,
             message: 'Duyệt bài viết thất bại!',
         });

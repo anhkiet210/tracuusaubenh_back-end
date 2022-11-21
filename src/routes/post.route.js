@@ -7,7 +7,7 @@ const PostRouter = express.Router();
 
 PostRouter.post('/create', isAuth, PostController.createPost);
 PostRouter.delete('/delete/:id', isAuth, PostController.deletePost);
-PostRouter.put('/update-post', isAuth, PostController.updatePost);
+PostRouter.put('/update-post/:id', isAuth, PostController.updatePost);
 PostRouter.get('/get-post-by-user', isAuth, PostController.getPostByIdUser);
 PostRouter.get('/get-post-pending', PostController.getPostPending);
 PostRouter.put('accept-post', isAuthAdmin, PostController.acceptPost);

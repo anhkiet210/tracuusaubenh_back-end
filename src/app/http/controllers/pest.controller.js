@@ -19,6 +19,15 @@ const createPest = async (req, res, next) => {
             });
         }
 
+        const checkPest = await PestModel.find(pestName);
+
+        if (checkPest) {
+            return res.status().json({
+                success: false,
+                message: 'Bệnh đã tồn tại trong cơ sở dữ liệu!',
+            });
+        }
+
         if (!file) {
             return res.status(404).json({
                 success: false,
@@ -92,12 +101,12 @@ const getAllPests = async (req, res, next) => {
 const getPestById = async (req, res, next) => {
     try {
         const pest = await PestModel.findById(req.params.id);
-        let list = [];
+        let list;
         const LoaiCay = await CropModel.findById(pest.LoaiCay);
-        list.push({
+        list = {
             pest: pest,
             crop: LoaiCay,
-        });
+        };
         res.status(200).json({
             success: true,
             message: 'Thành công.',
@@ -190,7 +199,9 @@ const updatePest = async (req, res, next) => {
         const { pestName, detailedSymptoms, identificationSymptoms, idCrop } = req.body;
         const { file } = req.files;
         let linkImg;
-        if (file) {
+        if (!file) {
+            linkImg = null;
+        } else {
             linkImg = await upload(file.tempFilePath, folder);
         }
 

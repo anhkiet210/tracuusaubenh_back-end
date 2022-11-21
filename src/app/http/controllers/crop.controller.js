@@ -24,7 +24,7 @@ const createCrop = async (req, res, next) => {
 
         const isCrop = await CropModel.findOne({ tenloai: cropName });
         if (isCrop) {
-            return res.status(502).json({
+            return res.status(501).json({
                 success: false,
                 message: 'Loại cây đã tồn tại.',
             });
@@ -75,14 +75,19 @@ const updateCrop = async (req, res, next) => {
     try {
         const Crop = await CropModel.findById(req.params.id);
         if (!Crop) {
-            return res.status(404).json({
+            return res.status(501).json({
                 success: false,
                 message: 'Loại cây trồng không tồn tại!',
             });
         }
         const { cropName, shortDes } = req.body;
         const { file } = req.files;
-        const linkImg = await upload(file.tempFilePath, folder);
+        let linkImg;
+        if (!file) {
+            linkImg = null;
+        } else {
+            linkImg = await upload(file.tempFilePath, folder);
+        }
         Crop.tenloai = cropName || Crop.tenloai;
         Crop.anh = linkImg.url || Crop.anh;
         Crop.mota = shortDes || Crop.mota;
