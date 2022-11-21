@@ -52,7 +52,7 @@ const createPost = async (req, res, next) => {
 const getAllPost = async (req, res, next) => {
     try {
         const posts = await PostModel.find();
-        let list;
+        let list = [];
         for (let i of posts) {
             const user = await UserModel.findById(i.NguoiDung, { hoten: 1, anhdaidien: 1 });
             list.push({
