@@ -1,0 +1,27 @@
+{
+    "name": "tracuusaubenh_back-end",
+    "version": "1.0.0",
+    "main": "server.js",
+    "license": "MIT",
+    "type": "module",
+    "dependencies": {
+        "assert": "^2.0.0",
+        "bcrypt": "^5.1.0",
+        "cloudinary": "^1.32.0",
+        "cors": "^2.8.5",
+        "decision-tree": "^0.3.7",
+        "dotenv": "^16.0.3",
+        "express": "^4.18.1",
+        "express-fileupload": "^1.4.0",
+        "jsonwebtoken": "^8.5.1",
+        "lodash": "^4.17.21",
+        "mongoose": "^6.6.1"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.20"
+    },
+    "scripts": {
+        "start": "node --experimental-modules --es-module-specifier-resolution=node server.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    }
+}
