@@ -1,19 +1,56 @@
+import { upload } from '../../../helper/cloudinary';
 import PesticideModel from '../../../models/pesticide.model';
 
+const folder = 'ak-tacuusaubenh/img-pesticides';
 const createPesticide = async (req, res, next) => {
     try {
         const { pesticideName, uses, pests } = req.body;
+        const { file } = req.files;
+
+        if (!pesticideName) {
+            return res.status(404).json({
+                success: false,
+                message: 'Hãy nhập tên thuốc!',
+            });
+        }
+
+        if (!file) {
+            return res.status(404).json({
+                success: false,
+                message: 'Hãy chọn ảnh cho thuốc!',
+            });
+        }
+
+        if (!uses) {
+            return res.status(404).json({
+                success: false,
+                message: 'Hãy nhập công dụng của thuốc!',
+            });
+        }
+
+        const checkPesticide = await PesticideModel.find(pesticideName);
+
+        if (checkPesticide) {
+            return res.status(501).json({
+                success: false,
+                message: 'Loại thuốc này đã tồn tại trong cơ sở dữ liệu!',
+            });
+        }
+
+        const linkImg = await upload(file.tempFilePath, folder);
+
         const infoPesticide = {
             tenthuoc: pesticideName,
             congdung: uses,
             Benhs: pests,
+            anh: linkImg.url,
         };
 
         const pesticide = await PesticideModel.create(infoPesticide);
         return res.status(200).json({
             success: true,
             message: 'Thêm thông tin thuốc trị thành công.',
-            pesticide,
+            data: pesticide,
         });
     } catch (error) {
         console.log(error);
@@ -30,7 +67,7 @@ const getAllPesticides = async (req, res, next) => {
         return res.status(200).json({
             success: true,
             message: 'Thành công.',
-            pesticides,
+            data: pesticides,
         });
     } catch (error) {
         console.log(error);
@@ -47,7 +84,7 @@ const getPesticedeByIdPest = async (req, res, next) => {
         return res.status(200).json({
             success: true,
             message: 'Thành công.',
-            listPesticides,
+            data: listPesticides,
         });
     } catch (error) {
         console.log(error);
@@ -58,4 +95,43 @@ const getPesticedeByIdPest = async (req, res, next) => {
     }
 };
 
-export { createPesticide, getAllPesticides, getPesticedeByIdPest };
+const updatePesticide = async (req, res, next) => {
+    try {
+        const { pesticideName, uses, pests } = req.body;
+        const { file } = req.files;
+
+        const checkPesticide = await PesticideModel.findById(req.params.id);
+        if (!checkPesticide) {
+            return res.status(404).json({
+                success: false,
+                message: 'Loại thuốc này không tồn tại!',
+            });
+        }
+
+        let linkImg;
+        if (!file) {
+            linkImg = null;
+        } else {
+            linkImg = await upload(file.tempFilePath, folder);
+        }
+
+        checkPesticide.tenthuoc = pesticideName || checkPesticide.tenthuoc;
+        checkPesticide.congdung = uses || checkPesticide.congdung;
+        checkPesticide.anh = linkImg.url || checkPesticide.anh;
+        checkPesticide.Benhs = pests || checkPesticide.Benhs;
+        checkPesticide.save();
+        return res.status(200).json({
+            success: true,
+            message: 'Thêm thông tin thuốc trị thành công.',
+            data: checkPesticide,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+export { createPesticide, getAllPesticides, getPesticedeByIdPest, updatePesticide };
