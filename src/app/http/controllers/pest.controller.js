@@ -19,7 +19,7 @@ const createPest = async (req, res, next) => {
             });
         }
 
-        const checkPest = await PestModel.find({ ten: pestName });
+        const checkPest = await PestModel.findOne({ ten: pestName });
 
         if (checkPest) {
             return res.status(502).json({
