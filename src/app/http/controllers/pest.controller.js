@@ -19,10 +19,10 @@ const createPest = async (req, res, next) => {
             });
         }
 
-        const checkPest = await PestModel.find(pestName);
+        const checkPest = await PestModel.find({ ten: pestName });
 
         if (checkPest) {
-            return res.status().json({
+            return res.status(502).json({
                 success: false,
                 message: 'Bệnh đã tồn tại trong cơ sở dữ liệu!',
             });
@@ -59,10 +59,14 @@ const createPest = async (req, res, next) => {
         };
 
         const pest = await PestModel.create(info);
+        const crop = await CropModel.findById(pest.LoaiCay);
         return res.status(200).json({
             success: true,
             message: 'Thêm thông tin sâu bệnh thành công.',
-            data: pest,
+            data: {
+                pest: pest,
+                crop: crop,
+            },
         });
     } catch (error) {
         console.log(error);
