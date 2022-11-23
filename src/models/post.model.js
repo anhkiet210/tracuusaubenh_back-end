@@ -27,6 +27,9 @@ const BaiViet = new Schema({
         type: Number,
         default: 0,
     },
+    thoigian: {
+        type: Date,
+    },
 });
 
 const PostModel = mongoose.model('BaiViet', BaiViet);
