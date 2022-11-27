@@ -9,7 +9,7 @@ cloud.config({
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 const upload = async (file, folder) => {
-    const image = await cloud.uploader.upload(file, { folder: folder, width: 150, crop: 'scale' });
+    const image = await cloud.uploader.upload(file, { folder: folder, width: 230, crop: 'scale' });
     return image;
 };
 

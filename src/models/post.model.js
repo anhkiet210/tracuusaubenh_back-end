@@ -14,7 +14,7 @@ const BaiViet = new Schema({
         default:
             'https://res.cloudinary.com/ak-tracuusaubenh/image/upload/v1666934115/ak-tracuusaubenh/depositphotos_247872612-stock-illustration-no-image-available-icon-vector_gojmbi.webp',
     },
-    NguoiDung: {
+    tacgia: {
         type: Schema.Types.ObjectId,
         required: true,
         ref: 'NguoiDung',
@@ -29,6 +29,10 @@ const BaiViet = new Schema({
     },
     thoigian: {
         type: Date,
+        default: Date.now(),
+    },
+    ghichu: {
+        type: String,
     },
 });
 
