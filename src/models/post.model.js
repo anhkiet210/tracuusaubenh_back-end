@@ -33,6 +33,7 @@ const BaiViet = new Schema({
     },
     ghichu: {
         type: String,
+        default: '',
     },
 });
 

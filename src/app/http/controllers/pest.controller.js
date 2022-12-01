@@ -2,14 +2,13 @@ import PestModel from '../../../models/pest.model';
 // import DecisionTree from '../../../helper/decisionTree';
 import DecisionTree from 'decision-tree';
 import CropModel from '../../../models/crop.model';
-import cloudinary from 'cloudinary';
 import { upload } from '../../../helper/cloudinary';
 
 const folder = 'ak-tracuusaubenh/img-pests';
 
 const createPest = async (req, res, next) => {
     try {
-        const { pestName, detailedSymptoms, identificationSymptoms, idCrop } = req.body;
+        const { pestName, detailedSymptoms, la, than, re, idCrop } = req.body;
         const { file } = req.files;
 
         if (!pestName) {
@@ -35,12 +34,12 @@ const createPest = async (req, res, next) => {
             });
         }
 
-        if (!identificationSymptoms) {
-            return res.status(404).json({
-                success: false,
-                message: 'Hãy nhập đặc điểm nhận dạng cho sâu bệnh!',
-            });
-        }
+        // if (!identificationSymptoms) {
+        //     return res.status(404).json({
+        //         success: false,
+        //         message: 'Hãy nhập đặc điểm nhận dạng cho sâu bệnh!',
+        //     });
+        // }
 
         if (!idCrop) {
             return res.status(404).json({
@@ -49,14 +48,22 @@ const createPest = async (req, res, next) => {
             });
         }
 
+        const trieuchungnhandang = {
+            la: la,
+            than: than,
+            re: re,
+        };
+
         const linkImg = await upload(file.tempFilePath, folder);
         const info = {
             ten: pestName,
             trieuchungchitiet: detailedSymptoms,
-            trieuchungnhandang: identificationSymptoms,
+            trieuchungnhandang: trieuchungnhandang,
             LoaiCay: idCrop,
             anh: linkImg.url,
         };
+        // console.log('info: ', info);
+        // console.log('identificationSymptoms: ', identificationSymptoms);
 
         const pest = await PestModel.create(info);
         const crop = await CropModel.findById(pest.LoaiCay);
@@ -145,27 +152,126 @@ const detectPest = async (req, res, next) => {
         //     { la: 'có đốm xám', than: 'thấp', re: '', benh: 'khô vằn' },
         // ];
 
-        let training_data = [];
+        // let training_data = [];
 
-        for (let i = 0; i < pests.length; i++) {
-            training_data.push({
-                la: pests[i].trieuchungnhandang.la,
-                than: pests[i].trieuchungnhandang.than,
-                re: pests[i].trieuchungnhandang.re,
-                benh: pests[i],
-            });
-        }
+        // for (let i = 0; i < pests.length; i++) {
+        //     training_data.push({
+        //         la: pests[i].trieuchungnhandang.la,
+        //         than: pests[i].trieuchungnhandang.than,
+        //         re: pests[i].trieuchungnhandang.re,
+        //         benh: pests[i],
+        //     });
+        // }
+
+        const training_data = [
+            {
+                loaicay: 'lúa',
+                la: 'vàng khô',
+                than: 'lùn',
+                re: '',
+                benh: 'vàng lùn',
+            },
+            {
+                loaicay: 'lúa',
+                la: 'màu lá xanh đậm, rìa lá bị rách và gợn sóng, xoăn tít lại',
+                than: 'lùn',
+                re: '',
+                benh: 'lùn xoắn lá',
+            },
+            {
+                loaicay: 'lúa',
+                la: 'có vết bệnh màu xám nâu, hình thoi ở giữ có màu trắng',
+                than: 'có vết bệnh màu xám nâu quanh thân',
+                re: '',
+                benh: 'đạo ôn',
+            },
+            {
+                loaicay: 'lúa',
+                la: 'vết cháy có màu xám, hoặc vàng nâu hoặc nâu đỏ, dọc theo hai bên rìa lá',
+                than: '',
+                re: '',
+                benh: 'cháy bìa lá',
+            },
+            {
+                loaicay: 'lúa',
+                la: 'trên lá có ổ của rầy',
+                than: 'là nơi tập trung của rầy trưởng thành',
+                re: 'là nơi tập trung của rầy trưởng thành',
+                benh: 'Rầy nâu, rầy lưng trắng',
+            },
+            {
+                loaicay: 'lúa',
+                la: 'sâu non ăn biểu bì mặt trên và diệp lục của lá dọc theo gân lá tạo thành những vệt trắng dài',
+                than: '',
+                re: '',
+                benh: 'Sâu cuốn lá nhỏ',
+            },
+            {
+                loaicay: 'lúa',
+                la: 'có màu xanh tái sẫm, dần chuyển sang màu vàng và héo khô',
+                than: 'có vết sâu đục vào phần dưới của thân',
+                re: '',
+                benh: 'Sâu đục thân 2 chấm',
+            },
+            {
+                loaicay: 'lúa',
+                la: 'Vết bệnh ở bẹ lá lúc đầu là vết đốm hình bầu dục màu lục tối hoặc xám nhạt, vết vằn da hổ, dạng đám mây',
+                than: '',
+                re: '',
+                benh: 'Bệnh khô vằn',
+            },
+            {
+                loaicay: 'lúa',
+                la: 'vết bệnh là những sọc nhỏ ngắn khác nhau, chạy dọc giữa các gân lá, lúc đầu vết bệnh xanh tái, dần dần chuyển màu nâu',
+                than: '',
+                re: '',
+                benh: 'Bệnh bạc lá và đốm sọc vi khuẩn',
+            },
+        ];
 
         const test_data = [
             {
-                la: 'vàng',
+                loaicay: 'lúa',
+                la: 'màu lá xanh đậm, rìa lá bị rách và gợn sóng, xoăn tít lại',
                 than: 'lùn',
-                re: 'héo',
-                benh: { name: 'vàng lùn', id: 'abc13' },
+                re: '',
+                benh: 'lùn xoắn lá',
             },
-            { la: 'vàng', than: '', re: '', benh: 'vàng lá' },
-            { la: 'có đốm xám', than: '', re: '', benh: 'khô vằn' },
-            { la: 'có đốm xám', than: 'thấp', re: '', benh: 'khô vằn' },
+            {
+                loaicay: 'lúa',
+                la: 'có vết bệnh màu xám nâu, hình thoi ở giữ có màu trắng',
+                than: 'có vết bệnh màu xám nâu quanh thân',
+                re: '',
+                benh: 'đạo ôn',
+            },
+            {
+                loaicay: 'lúa',
+                la: 'vết cháy có màu xám, hoặc vàng nâu hoặc nâu đỏ, dọc theo hai bên rìa lá',
+                than: '',
+                re: '',
+                benh: 'cháy bìa lá',
+            },
+            {
+                loaicay: 'lúa',
+                la: 'trên lá có ổ của rầy',
+                than: 'là nơi tập trung của rầy trưởng thành',
+                re: 'là nơi tập trung của rầy trưởng thành',
+                benh: 'Rầy nâu, rầy lưng trắng',
+            },
+            {
+                loaicay: 'lúa',
+                la: 'sâu non ăn biểu bì mặt trên và diệp lục của lá dọc theo gân lá tạo thành những vệt trắng dài',
+                than: '',
+                re: '',
+                benh: 'Sâu cuốn lá nhỏ',
+            },
+            {
+                loaicay: 'lúa',
+                la: 'có màu xanh tái sẫm, dần chuyển sang màu vàng và héo khô',
+                than: 'có vết sâu đục vào phần dưới của thân',
+                re: '',
+                benh: 'Sâu đục thân 2 chấm',
+            },
         ];
 
         const class_name = 'benh';
