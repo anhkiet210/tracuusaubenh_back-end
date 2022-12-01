@@ -9,7 +9,7 @@ const Register = async (req, res, next) => {
         const email = req.body.email;
         const checkUser = await AdminModel.findOne({ email: email });
         if (checkUser) {
-            res.status(502).json({
+            res.status(402).json({
                 success: false,
                 message: 'Người dùng đã tồn tại',
             });

@@ -9,7 +9,7 @@ const Register = async (req, res, next) => {
         const email = req.body.email;
         const checkUser = await UserModel.findOne({ email: email });
         if (checkUser) {
-            res.status(502).json({
+            res.status(402).json({
                 success: false,
                 message: 'Người dùng đã tồn tại',
             });
@@ -114,7 +114,7 @@ const changePassword = async (req, res, next) => {
     try {
         const { currentPassword, newPassword } = req.body;
         if (!currentPassword || !newPassword) {
-            return res.status(502).json({
+            return res.status(404).json({
                 success: false,
                 message: 'Hãy nhập đầy đủ thông tin!',
             });
@@ -123,7 +123,7 @@ const changePassword = async (req, res, next) => {
         const user = await UserModel.findById(req.user.id);
         const isPassValid = bcrypt.compareSync(currentPassword, user.matkhau);
         if (!isPassValid) {
-            return res.status(502).json({
+            return res.status(404).json({
                 success: false,
                 message: 'Mật khẩu hiện tại không đúng!',
             });

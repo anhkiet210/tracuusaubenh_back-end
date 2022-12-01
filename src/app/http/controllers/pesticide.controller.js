@@ -31,7 +31,7 @@ const createPesticide = async (req, res, next) => {
         const checkPesticide = await PesticideModel.find(pesticideName);
 
         if (checkPesticide) {
-            return res.status(501).json({
+            return res.status(402).json({
                 success: false,
                 message: 'Loại thuốc này đã tồn tại trong cơ sở dữ liệu!',
             });

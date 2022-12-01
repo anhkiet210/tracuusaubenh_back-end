@@ -24,7 +24,7 @@ const createCrop = async (req, res, next) => {
 
         const isCrop = await CropModel.findOne({ tenloai: cropName });
         if (isCrop) {
-            return res.status(501).json({
+            return res.status(402).json({
                 success: false,
                 message: 'Loại cây đã tồn tại.',
             });
@@ -75,7 +75,7 @@ const updateCrop = async (req, res, next) => {
     try {
         const Crop = await CropModel.findById(req.params.id);
         if (!Crop) {
-            return res.status(501).json({
+            return res.status(402).json({
                 success: false,
                 message: 'Loại cây trồng không tồn tại!',
             });
