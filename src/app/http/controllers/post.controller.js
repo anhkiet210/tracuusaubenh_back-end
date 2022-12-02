@@ -43,7 +43,7 @@ const createPost = async (req, res, next) => {
             data: { post, user },
         });
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         res.status(500).json({
             success: false,
             message: error.message,
@@ -53,22 +53,14 @@ const createPost = async (req, res, next) => {
 
 const getAllPost = async (req, res, next) => {
     try {
-        const posts = await PostModel.find().sort({ thoigian: 'desc' });
-        // let list = [];
-        // for (let i of posts) {
-        //     const user = await UserModel.findById(i.tacgia, { hoten: 1, anhdaidien: 1 });
-        //     list.push({
-        //         post: i,
-        //         user: user,
-        //     });
-        // }
+        const posts = await PostModel.find({ trangthai: 'Đã duyệt' }).sort({ thoigian: 'desc' });
         res.status(200).json({
             success: true,
             message: 'Thành công.',
             data: posts,
         });
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         res.status(500).json({
             success: false,
             message: error.message,
@@ -86,6 +78,42 @@ const getPostByIdUser = async (req, res, next) => {
             data: posts,
         });
     } catch (error) {
+        // console.log(error);
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+const getMyPostPending = async (req, res, next) => {
+    try {
+        const posts = await PostModel.find({ tacgia: req.user.id, trangthai: 'Từ chối' });
+
+        res.status(200).json({
+            success: true,
+            message: 'Thành công.',
+            data: posts,
+        });
+    } catch (error) {
+        // console.log(error);
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+const getMyPostDenied = async (req, res, next) => {
+    try {
+        const posts = await PostModel.find({ tacgia: req.user.id, trangthai: 'Từ chối' });
+
+        res.status(200).json({
+            success: true,
+            message: 'Thành công.',
+            data: posts,
+        });
+    } catch (error) {
         console.log(error);
         res.status(500).json({
             success: false,
@@ -96,7 +124,16 @@ const getPostByIdUser = async (req, res, next) => {
 
 const deletePost = async (req, res, next) => {
     try {
-        await PostModel.findByIdAndDelete(req.params.id);
+        const post = await PostModel.findById(req.params.id);
+        if (!post) {
+            res.status(404).json({
+                success: false,
+                message: 'Không tìm thấy bài viết!',
+            });
+            return;
+        }
+        // console.log('delete post: ', res);
+        post.deleteOne();
         res.status(200).json({
             success: true,
             message: 'Đã xóa bài viết.',
@@ -192,7 +229,7 @@ const acceptPost = async (req, res, next) => {
             message: 'Duyệt bài viết thành công.',
         });
     } catch (error) {
-        res.status(501).json({
+        res.status(500).json({
             success: false,
             message: 'Duyệt bài viết thất bại!',
         });
@@ -217,7 +254,7 @@ const denyPost = async (req, res, next) => {
             message: 'Đã từ chối bài viết.',
         });
     } catch (error) {
-        res.status(501).json({
+        res.status(500).json({
             success: false,
             message: 'Thất bại!',
         });
@@ -233,7 +270,7 @@ const getPostManyView = async (req, res, next) => {
             data: posts,
         });
     } catch (error) {
-        res.status(501).json({
+        res.status(500).json({
             success: false,
             message: 'Duyệt bài viết thất bại!',
         });
@@ -257,7 +294,7 @@ const getPostById = async (req, res, next) => {
             data: { post, user },
         });
     } catch (error) {
-        res.status(501).json({
+        res.status(500).json({
             success: false,
             message: 'Lấy thông tin bài viết thất bại!',
         });
@@ -280,7 +317,7 @@ const increaseViews = async (req, res, next) => {
             message: 'Thành công.',
         });
     } catch (error) {
-        res.status(501).json({
+        res.status(500).json({
             success: false,
             message: 'Lỗi',
         });
@@ -299,4 +336,6 @@ export {
     getPostManyView,
     getPostById,
     increaseViews,
+    getMyPostDenied,
+    getMyPostPending,
 };
