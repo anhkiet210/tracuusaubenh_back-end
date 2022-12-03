@@ -88,7 +88,7 @@ const getPostByIdUser = async (req, res, next) => {
 
 const getMyPostPending = async (req, res, next) => {
     try {
-        const posts = await PostModel.find({ tacgia: req.user.id, trangthai: 'Từ chối' });
+        const posts = await PostModel.find({ tacgia: req.user.id, trangthai: 'Chờ duyệt' });
 
         res.status(200).json({
             success: true,
@@ -169,7 +169,7 @@ const updatePost = async (req, res, next) => {
 
         post.tieude = title || post.tieude;
         post.noidung = content || post.noidung;
-        post.anh = imgLink.url || post.anh;
+        post.anh = linkImg.url || post.anh;
         post.save();
         res.status(200).json({
             success: true,
@@ -210,9 +210,10 @@ const getPostPending = async (req, res, next) => {
     }
 };
 
-const acceptPost = async (req, res, next) => {
+const changeStatusPost = async (req, res, next) => {
     try {
         const post = await PostModel.findById(req.params.id);
+        const { status, note } = req.body;
 
         if (!post) {
             res.status(404).json({
@@ -222,11 +223,13 @@ const acceptPost = async (req, res, next) => {
             return;
         }
 
-        post.trangthai = 'Đã duyệt';
+        post.trangthai = status || post.trangthai;
+        post.ghichu = note || post.ghichu;
         post.save();
+        const message = status === 'Đã duyệt' ? 'Duyệt bài viết thành công.' : 'Đã từ chối bài viết này.';
         res.status(200).json({
             success: true,
-            message: 'Duyệt bài viết thành công.',
+            message: message,
         });
     } catch (error) {
         res.status(500).json({
@@ -331,7 +334,7 @@ export {
     deletePost,
     updatePost,
     getPostPending,
-    acceptPost,
+    changeStatusPost,
     denyPost,
     getPostManyView,
     getPostById,
