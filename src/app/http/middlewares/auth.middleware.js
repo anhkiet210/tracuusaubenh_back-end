@@ -10,20 +10,21 @@ const isAuth = async (req, res, next) => {
         });
     }
     // console.log({ tokenFromClient });
-
-    const isVerifyToken = await jwtHelper.verifyToken(tokenFromClient);
-    if (!isVerifyToken) {
-        return res.status(401).json({
-            success: false,
-            message: 'Bạn không có quyền truy cập tính năng này!',
-        });
-    }
     try {
+        const isVerifyToken = await jwtHelper.verifyToken(tokenFromClient);
+        console.log('verify : ', isVerifyToken);
+        if (!isVerifyToken) {
+            res.status(401).json({
+                success: false,
+                message: 'Bạn không có quyền truy cập tính năng này!',
+            });
+            return;
+        }
         req.user = await UserModel.findById(isVerifyToken.id);
         next();
     } catch (error) {
         console.log(error.code);
-        res.status(500).json({ success: false, message: error.message });
+        res.status(500).json({ success: false, message: 'Phiên đăng nhập của bạn đã hết hạn, hãy đăng nhập lại' });
     }
 };
 
