@@ -1,7 +1,7 @@
 import { upload } from '../../../helper/cloudinary';
 import PesticideModel from '../../../models/pesticide.model';
 
-const folder = 'ak-tacuusaubenh/img-pesticides';
+const folder = 'ak-tracuusaubenh/img-pesticides';
 const createPesticide = async (req, res, next) => {
     try {
         const { pesticideName, uses, pests } = req.body;
@@ -28,7 +28,7 @@ const createPesticide = async (req, res, next) => {
             });
         }
 
-        const checkPesticide = await PesticideModel.find(pesticideName);
+        const checkPesticide = await PesticideModel.findOne({ tenthuoc: pesticideName });
 
         if (checkPesticide) {
             return res.status(402).json({
@@ -42,11 +42,16 @@ const createPesticide = async (req, res, next) => {
         const infoPesticide = {
             tenthuoc: pesticideName,
             congdung: uses,
-            Benhs: pests,
             anh: linkImg.url,
         };
 
-        const pesticide = await PesticideModel.create(infoPesticide);
+        const pesticide = new PesticideModel({
+            ...infoPesticide,
+        });
+        pests.forEach((item) => {
+            pesticide.Benhs.push(JSON.parse(item));
+        });
+        pesticide.save();
         return res.status(200).json({
             success: true,
             message: 'Thêm thông tin thuốc trị thành công.',

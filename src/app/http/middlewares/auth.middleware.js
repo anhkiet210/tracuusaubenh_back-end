@@ -12,7 +12,7 @@ const isAuth = async (req, res, next) => {
     // console.log({ tokenFromClient });
     try {
         const isVerifyToken = await jwtHelper.verifyToken(tokenFromClient);
-        console.log('verify : ', isVerifyToken);
+        // console.log('verify : ', isVerifyToken);
         if (!isVerifyToken) {
             res.status(401).json({
                 success: false,
@@ -23,7 +23,7 @@ const isAuth = async (req, res, next) => {
         req.user = await UserModel.findById(isVerifyToken.id);
         next();
     } catch (error) {
-        console.log(error.code);
+        console.log(error);
         res.status(500).json({ success: false, message: 'Phiên đăng nhập của bạn đã hết hạn, hãy đăng nhập lại' });
     }
 };

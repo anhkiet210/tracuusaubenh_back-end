@@ -27,9 +27,7 @@ const ThuocTri = new Schema({
         default:
             'https://res.cloudinary.com/ak-tracuusaubenh/image/upload/v1666934115/ak-tracuusaubenh/depositphotos_247872612-stock-illustration-no-image-available-icon-vector_gojmbi.webp',
     },
-    Benhs: {
-        type: [tempBenh],
-    },
+    Benhs: [tempBenh],
 });
 
 const PesticideModel = mongoose.model('ThuocTri', ThuocTri);
