@@ -19,8 +19,7 @@ const Admin = new Schema({
     },
     anhdaidien: {
         type: String,
-        default:
-            'https://res.cloudinary.com/ak-tracuusaubenh/image/upload/v1668617301/ak-tracuusaubenh/user-icon_rcrrs9.jpg',
+        default: 'https://res.cloudinary.com/ak210/image/upload/v1668617301/ak-tracuusaubenh/user-icon_rcrrs9.jpg',
     },
 });
 

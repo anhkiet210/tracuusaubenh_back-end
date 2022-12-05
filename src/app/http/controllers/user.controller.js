@@ -145,4 +145,28 @@ const changePassword = async (req, res, next) => {
     }
 };
 
-export { Register, Login, getAllUser, getInfoUser, changePassword };
+const deleteUser = async (req, res, next) => {
+    try {
+        const id = req.params.id;
+        const user = await UserModel.findById(req.params.id);
+        if (!user) {
+            res.status(404).json({
+                success: false,
+                message: 'Không tìm thấy người dùng!',
+            });
+            return;
+        }
+        user.delete();
+        res.status(200).json({
+            success: true,
+            message: 'Xóa người dùng thành công.',
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+export { Register, Login, getAllUser, getInfoUser, changePassword, deleteUser };

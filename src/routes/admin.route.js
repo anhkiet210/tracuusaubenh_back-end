@@ -6,6 +6,7 @@ const AdminRouter = express.Router();
 
 AdminRouter.post('/login', AdminController.Login);
 AdminRouter.post('/register', AdminController.Register);
+AdminRouter.put('/change-password', isAuthAdmin, AdminController.changePassword);
 AdminRouter.get('/get-info', isAuthAdmin, AdminController.getInfo);
 
 export default AdminRouter;
