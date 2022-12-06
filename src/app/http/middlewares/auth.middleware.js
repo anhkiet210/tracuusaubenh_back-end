@@ -9,23 +9,16 @@ const isAuth = async (req, res, next) => {
             message: 'Vui lòng đăng nhập để truy cập tài nguyên này!',
         });
     }
-    // console.log({ tokenFromClient });
-    try {
-        const isVerifyToken = await jwtHelper.verifyToken(tokenFromClient);
-        // console.log('verify : ', isVerifyToken);
-        if (!isVerifyToken) {
-            res.status(401).json({
-                success: false,
-                message: 'Bạn không có quyền truy cập tính năng này!',
-            });
-            return;
-        }
-        req.user = await UserModel.findById(isVerifyToken.id);
-        next();
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ success: false, message: 'Phiên đăng nhập của bạn đã hết hạn, hãy đăng nhập lại' });
+    const isVerifyToken = jwtHelper.verifyToken(tokenFromClient);
+    if (!isVerifyToken) {
+        res.status(401).json({
+            success: false,
+            message: 'Bạn không có quyền truy cập tính năng này!',
+        });
+        return;
     }
+    req.user = await UserModel.findById(isVerifyToken.id);
+    return next();
 };
 
 export default isAuth;

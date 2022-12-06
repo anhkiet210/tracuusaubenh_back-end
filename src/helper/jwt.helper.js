@@ -21,14 +21,19 @@ const sendToken = (user, res, message) => {
 };
 
 const verifyToken = (token) => {
-    return new Promise((resolve, reject) => {
-        jwt.verify(token, process.env.TOKEN_SECRET, (error, decode) => {
-            if (error) {
-                return reject(error);
-            }
-            resolve(decode);
-        });
-    });
+    try {
+        return jwt.verify(token, process.env.TOKEN_SECRET);
+    } catch (error) {
+        console.log(`Error in verify access token:  + ${error}`);
+        return null;
+    }
+    //     jwt.verify(token, process.env.TOKEN_SECRET, (error, decode) => {
+    //         if (error) {
+    //             return reject(error);
+    //         }
+    //         resolve(decode);
+    //     });
+    // });
 };
 
 export { sendToken, verifyToken };

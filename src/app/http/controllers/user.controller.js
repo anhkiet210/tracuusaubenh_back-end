@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import { sendToken } from '../../../helper/jwt.helper';
 
 const saltRounds = 10;
+const folder = 'ak-tracuusaubenh/avatar';
 
 const Register = async (req, res, next) => {
     try {
