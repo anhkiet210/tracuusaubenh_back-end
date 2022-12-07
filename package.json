@@ -1,12 +1,9 @@
 {
     "name": "tracuusaubenh_back-end",
     "version": "1.0.0",
-    "main": "server.js",
+    "main": "index.js",
     "license": "MIT",
     "type": "module",
-    "engines": {
-        "node": "14.x"
-    },
     "dependencies": {
         "assert": "^2.0.0",
         "bcrypt": "^5.1.0",
@@ -24,7 +21,6 @@
         "nodemon": "^2.0.20"
     },
     "scripts": {
-        "start": "node --experimental-modules --es-module-specifier-resolution=node server.js",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "start": "node --experimental-modules --es-module-specifier-resolution=node index.js"
     }
 }
